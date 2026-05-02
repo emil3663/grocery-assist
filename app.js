@@ -177,16 +177,20 @@ uploadZone.addEventListener('drop', e => {
 receiptFile.addEventListener('change', () => { if (receiptFile.files[0]) handleFile(receiptFile.files[0]); });
 
 function handleFile(file) {
-  const url = URL.createObjectURL(file);
-  document.getElementById('receiptPreview').src = url;
-  previewWrap.style.display = 'block';
-  ocrResultEl.style.display = 'none';
-  runOCR(url);
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    document.getElementById('receiptPreview').src = dataUrl;
+    previewWrap.style.display = 'block';
+    ocrResultEl.style.display = 'none';
+    runOCR(dataUrl);
+  };
+  reader.readAsDataURL(file);
 }
 
 async function runOCR(imageUrl) {
   ocrProgress.style.display = 'flex';
-  ocrStatus.textContent = 'Initialising OCR engine…';
+  ocrStatus.textContent = 'Initializing OCR engine…';
   try {
     if (typeof Tesseract === 'undefined') {
       throw new Error('Tesseract.js not loaded. Please check your internet connection.');
@@ -224,20 +228,37 @@ function parseReceiptText(text) {
     return;
   }
 
-  ocrItemList.innerHTML = ocrItems.map(i => `
-    <div class="ocr-item">
-      <input type="checkbox" id="ocr_${i.id}" checked onchange="toggleOcrItem('${i.id}')" />
-      <label class="ocr-name" for="ocr_${i.id}">${escHtml(i.name)}</label>
-      <span class="ocr-price">R ${i.price.toFixed(2)}</span>
-    </div>`).join('');
+  ocrItemList.innerHTML = '';
+  ocrItems.forEach(i => {
+    const wrap  = document.createElement('div');
+    wrap.className = 'ocr-item';
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id   = 'ocr_' + i.id;
+    cb.checked = true;
+    cb.addEventListener('change', () => toggleOcrItem(i.id));
+
+    const lbl = document.createElement('label');
+    lbl.className = 'ocr-name';
+    lbl.htmlFor   = cb.id;
+    lbl.textContent = i.name;
+
+    const price = document.createElement('span');
+    price.className = 'ocr-price';
+    price.textContent = 'R ' + i.price.toFixed(2);
+
+    wrap.append(cb, lbl, price);
+    ocrItemList.appendChild(wrap);
+  });
 
   ocrResultEl.style.display = 'block';
 }
 
-window.toggleOcrItem = id => {
+function toggleOcrItem(id) {
   const item = ocrItems.find(x => x.id === id);
   if (item) item.selected = !item.selected;
-};
+}
 
 document.getElementById('importOcr').addEventListener('click', () => {
   const toImport = ocrItems.filter(x => x.selected);
