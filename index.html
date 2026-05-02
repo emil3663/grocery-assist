@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocery Assist</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="topbar">
+    <a href="../index.html" class="back">← Hub</a>
+    <span class="title">🛒 Grocery Assist</span>
+    <button id="clearAll" class="btn-danger">Clear All</button>
+  </nav>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="list">Shopping List</button>
+    <button class="tab" data-tab="budget">Budget</button>
+    <button class="tab" data-tab="scan">Scan Receipt</button>
+    <button class="tab" data-tab="prices">Price Compare</button>
+  </div>
+
+  <!-- Shopping List Tab -->
+  <section id="tab-list" class="tab-content active">
+    <div class="panel">
+      <h2>My Shopping List</h2>
+      <div class="add-item-row">
+        <input type="text" id="itemName" placeholder="Item name" />
+        <input type="number" id="itemQty" placeholder="Qty" min="1" value="1" />
+        <input type="number" id="itemPrice" placeholder="Est. price" step="0.01" min="0" />
+        <select id="itemCategory">
+          <option value="Produce">Produce</option>
+          <option value="Dairy">Dairy</option>
+          <option value="Meat">Meat</option>
+          <option value="Bakery">Bakery</option>
+          <option value="Frozen">Frozen</option>
+          <option value="Snacks">Snacks</option>
+          <option value="Beverages">Beverages</option>
+          <option value="Household">Household</option>
+          <option value="Other">Other</option>
+        </select>
+        <button id="addItem" class="btn-primary">Add</button>
+      </div>
+
+      <div class="filter-row">
+        <input type="text" id="searchItems" placeholder="🔍 Filter items..." />
+        <select id="filterCategory">
+          <option value="">All Categories</option>
+          <option value="Produce">Produce</option>
+          <option value="Dairy">Dairy</option>
+          <option value="Meat">Meat</option>
+          <option value="Bakery">Bakery</option>
+          <option value="Frozen">Frozen</option>
+          <option value="Snacks">Snacks</option>
+          <option value="Beverages">Beverages</option>
+          <option value="Household">Household</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div id="itemList" class="item-list"></div>
+
+      <div class="list-summary">
+        <span>Items: <strong id="totalItems">0</strong></span>
+        <span>Checked: <strong id="checkedItems">0</strong></span>
+        <span>Est. Total: <strong id="estTotal">R 0.00</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Budget Tab -->
+  <section id="tab-budget" class="tab-content">
+    <div class="panel">
+      <h2>Budget Tracker</h2>
+      <div class="budget-setup">
+        <label>Monthly Grocery Budget:</label>
+        <div class="input-row">
+          <span class="currency">R</span>
+          <input type="number" id="monthlyBudget" placeholder="0.00" step="0.01" min="0" />
+          <button id="saveBudget" class="btn-primary">Save</button>
+        </div>
+      </div>
+
+      <div class="budget-visual">
+        <div class="budget-bar-wrap">
+          <div class="budget-bar" id="budgetBar"></div>
+        </div>
+        <div class="budget-labels">
+          <span id="spentLabel">Spent: R 0.00</span>
+          <span id="remainLabel">Remaining: R 0.00</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top:28px;">Expense History</h3>
+      <div class="expense-add">
+        <input type="text" id="expenseDesc" placeholder="Description" />
+        <input type="number" id="expenseAmt" placeholder="Amount" step="0.01" min="0" />
+        <input type="date" id="expenseDate" />
+        <button id="addExpense" class="btn-primary">Add</button>
+      </div>
+      <div id="expenseList" class="expense-list"></div>
+    </div>
+  </section>
+
+  <!-- Scan Receipt Tab -->
+  <section id="tab-scan" class="tab-content">
+    <div class="panel">
+      <h2>Scan Till Slip / Receipt</h2>
+      <p class="hint">Take a photo or upload an image of your receipt. The OCR engine will extract items and prices.</p>
+
+      <div class="upload-zone" id="uploadZone">
+        <span class="upload-icon">📷</span>
+        <p>Click or drag &amp; drop a receipt image</p>
+        <input type="file" id="receiptFile" accept="image/*" capture="environment" />
+      </div>
+
+      <div id="previewWrap" style="display:none; text-align:center; margin-top:16px;">
+        <img id="receiptPreview" style="max-width:100%; max-height:400px; border-radius:8px;" />
+      </div>
+
+      <div id="ocrProgress" style="display:none;" class="ocr-progress">
+        <div class="spinner"></div>
+        <span id="ocrStatus">Processing receipt…</span>
+      </div>
+
+      <div id="ocrResult" class="ocr-result" style="display:none;">
+        <h3>Recognised Items</h3>
+        <div id="ocrItemList" class="ocr-items"></div>
+        <button id="importOcr" class="btn-primary" style="margin-top:14px;">Import to Shopping List</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Price Compare Tab -->
+  <section id="tab-prices" class="tab-content">
+    <div class="panel">
+      <h2>Price Comparison</h2>
+      <p class="hint">Search for a product to compare estimated prices across popular South African grocery chains.</p>
+      <div class="price-search-row">
+        <input type="text" id="priceSearchInput" placeholder="e.g. milk, bread, eggs…" />
+        <button id="priceSearch" class="btn-primary">Search</button>
+      </div>
+      <div id="priceResults" class="price-results"></div>
+    </div>
+  </section>
+
+  <!-- Tesseract.js OCR library -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
