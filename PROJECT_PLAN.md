@@ -1,8 +1,8 @@
 # Grocery Assist Project Plan
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** 2026-05-08  
-**Status:** Approved planning draft
+**Status:** Decision locked for MVP execution
 
 ## 1) Product Vision
 
@@ -241,3 +241,61 @@ Yes, this is part of the plan.
 2. Define v1 thresholds (budget alert trigger, reminder confidence)
 3. Design assistant card components and interaction copy
 4. Build Phase 0 and Phase 1 technical tasks in GitHub Issues/Project
+
+## 11) Final Decision Log (Locked)
+
+### 11.1 Budget Guardrail Assistant
+
+- A1.3: User-configurable alert threshold
+- A2.2: Warning plus suggested item changes
+- A3.1: Dismiss suppression limited to current trip
+
+### 11.2 Smart Substitution Assistant
+
+- B1.3: User-selectable substitution strictness
+- B2.3: Per-item and per-category substitution controls
+- B3.2: Only show suggestions with medium+ confidence
+
+### 11.3 Staples Reminder Assistant
+
+- C1.3: Frequency model plus user-defined staples
+- C2.3: Show on app open and list open, capped to once daily
+- C3.1: Show top 3 reminders initially
+
+Scale trigger for C3 change (top 3 to configurable):
+
+- Move from C3.1 to C3.3 after two consecutive releases where all are true:
+- Reminder apply rate is at least 30%
+- Reminder dismiss rate is below 45%
+- No increase above 5% in session abandonment after reminder display
+- At least 500 reminder events captured in the pilot region
+
+### 11.4 Receipt Review Assistant
+
+- D1.2: Force review only for low-confidence OCR lines
+- D2.2: Inline edit plus quick category picker
+- D3.1 now; D3.2 later: Learn on device first, then account-level learning after sync rollout
+
+### 11.5 Post-Trip Insight Assistant
+
+- E1.3: Show both per-trip summary and weekly digest
+- E2.3: Focus on budget, savings, and next actions
+- E3.2: Persist one next-trip goal
+
+### 11.6 Location and Regional Base Lists
+
+- F1.3: Auto-detect location with manual override
+- F2.2: Suburb/postal-zone granularity
+- F3.2: Regional templates include Essentials, Budget, Family, Top-up
+
+### 11.7 Pricing Source Strategy
+
+- G1.3: Hybrid pricing (simulated + receipt-derived) with confidence labels
+- G2.2: Onboard stores only after data quality/freshness thresholds
+- G3.2: Price freshness window set to 14 days
+
+### 11.8 Privacy, Trust, and Controls
+
+- H1.2: Persist coarse region only, not precise coordinates
+- H2.2: Show reason and confidence on every assistant card
+- H3.2: Full user controls for card types, confidence, export/delete
